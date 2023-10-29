@@ -1,0 +1,81 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="Quelldateien">
+      <UniqueIdentifier>{4FC737F1-C7A5-4376-A066-2A32D752A2FF}</UniqueIdentifier>
+      <Extensions>cpp;c;cc;cxx;def;odl;idl;hpj;bat;asm;asmx</Extensions>
+    </Filter>
+    <Filter Include="Headerdateien">
+      <UniqueIdentifier>{93995380-89BD-4b04-88EB-625FBE52EBFB}</UniqueIdentifier>
+      <Extensions>h;hh;hpp;hxx;hm;inl;inc;ipp;xsd</Extensions>
+    </Filter>
+    <Filter Include="Ressourcendateien">
+      <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
+      <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="can-monitor.h">
+      <Filter>Headerdateien</Filter>
+    </ClInclude>
+    <ClInclude Include="lib.h">
+      <Filter>Headerdateien</Filter>
+    </ClInclude>
+    <ClInclude Include="decoder-can-cdb.h">
+      <Filter>Headerdateien</Filter>
+    </ClInclude>
+    <ClInclude Include="decoder-can-cs1.h">
+      <Filter>Headerdateien</Filter>
+    </ClInclude>
+    <ClInclude Include="decoder-can-cs2.h">
+      <Filter>Headerdateien</Filter>
+    </ClInclude>
+    <ClInclude Include="decoder-can-maecan.h">
+      <Filter>Headerdateien</Filter>
+    </ClInclude>
+    <ClInclude Include="decoder-z21.h">
+      <Filter>Headerdateien</Filter>
+    </ClInclude>
+    <ClInclude Include="tools.h">
+      <Filter>Headerdateien</Filter>
+    </ClInclude>
+    <ClInclude Include="..\linuxinc\asprintf.h">
+      <Filter>Headerdateien</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="can-monitor.c">
+      <Filter>Quelldateien</Filter>
+    </ClCompile>
+    <ClCompile Include="crc-ccitt.c">
+      <Filter>Quelldateien</Filter>
+    </ClCompile>
+    <ClCompile Include="..\linuxinc\getline.c">
+      <Filter>Quelldateien</Filter>
+    </ClCompile>
+    <ClCompile Include="lib.c">
+      <Filter>Quelldateien</Filter>
+    </ClCompile>
+    <ClCompile Include="decoder-can-cdb.c">
+      <Filter>Quelldateien</Filter>
+    </ClCompile>
+    <ClCompile Include="decoder-can-cs1.c">
+      <Filter>Quelldateien</Filter>
+    </ClCompile>
+    <ClCompile Include="decoder-can-cs2.c">
+      <Filter>Quelldateien</Filter>
+    </ClCompile>
+    <ClCompile Include="decoder-can-maecan.c">
+      <Filter>Quelldateien</Filter>
+    </ClCompile>
+    <ClCompile Include="decoder-z21.c">
+      <Filter>Quelldateien</Filter>
+    </ClCompile>
+    <ClCompile Include="tools.c">
+      <Filter>Quelldateien</Filter>
+    </ClCompile>
+    <ClCompile Include="..\linuxinc\asprintf.c">
+      <Filter>Quelldateien</Filter>
+    </ClCompile>
+  </ItemGroup>
+</Project>

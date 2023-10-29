@@ -97,19 +97,23 @@ void print_usage(char *prg) {
 
 int itfbyindex(char *iname) {
 	char errbuf[PCAP_ERRBUF_SIZE];
-	struct pcap_if *pifptr;
+	struct pcap_if *pifptr = NULL;
 	int n = 1;
 	int index = atoi(iname);
 	
-	if (pcap_findalldevs(&pifptr, errbuf) == 0) do {
+	if (pcap_findalldevs(&pifptr, errbuf)) return -2;	// error case
+	struct pcap_if *pnxt = pifptr;
+	while (pnxt) {
 		if (index == 0)
-			printf("%d: %s --> %s\n", n, pifptr->description, pifptr->name);
+			printf("%d: %s --> %s\n", n, pnxt->description, pnxt->name);
 		if (index == n++) {
-			strcpy(iname, pifptr->name);
+			strcpy(iname, pnxt->name);
+			pcap_freealldevs(pifptr);
 			return 1;			// entry found
 		}
-		pifptr = pifptr->next;
-	} while (pifptr);
+		pnxt = pnxt->next;
+	}
+	pcap_freealldevs(pifptr);
 	return (index) ? -1 : 0;	// out of range / list
 }
 
@@ -844,6 +848,7 @@ int main(int argc, char **argv) {
 		}
 		else if (c == 0) return (EXIT_SUCCESS);
 	}
+	printf("Monitor Interface: %s\n", itfname);
 	/* TODO : check the interface capabilities not the name */
     if (!strstr(itfname, "can"))
 	live_capture = 1;
@@ -877,7 +882,7 @@ int main(int argc, char **argv) {
 	}
 	int caplinktype = pcap_datalink(handle);
 	if (verbose)
-	    printf("Analyzing file %s with capture link type %d\n", pcap_file, caplinktype);
+	    printf("Analyzing %s with capture link type %d\n", pcap_file, caplinktype);
 
 	while (((packet = pcap_next(handle, &header)) != NULL) || live_capture) {
 	    if (packet == NULL)
