@@ -1,0 +1,54 @@
+Digitalsignalanalyse
+====================
+
+Das Archiv umfasst die Quellcodes folgender Teile:
+
+    pifang  => Auffangen eines Datenstroms mit einem Raspberry Pi Schienensignal an MISO, in cmdline.txt "spidev.bufsiz=65536" einfügen
+    dat2wav => Umwandeln des aufgefangenen Datenstroms in eine wav-Datei (Betrachten z.B. mit Audacity.)
+    diganal => Interpretieren des Datenstroms bzw. der wav-Datei 
+
+dat2wav und diganal sind geeignet für Windows- (Visual Studio) und Linux- (gcc) PCs und für RaspberryPi.
+
+Aufrufbeispiele:
+
+    dat2wav testxyz1.dat testxyz1.wav
+    diganal testxyz1.dat > testxyz1.txt
+    diganal test.0
+    diganal test.wav 
+
+Aus der Erweiterung des Dateinamens bestimmt diganal das Dateiformat:
+
+    wav => Wavedatei mit 44100 oder 88200 8Bit-Samples pro Sekunde
+    0 bis 7 => Sigrok-Analyzer-Format mit 1 MSample/s mit Auswertung des entsprechenden Kanals
+    sonst => roher Datenstrom 
+
+
+diganal-Ausgabebeispiel:
+
+
+   1178 ms: DCC Pr.51, Daten: c0 1e a0 7e(OK)  L 30 FG2B:0
+   1212 ms: MFX A07:0 Bake von Zentrale 0xF9812, Opt 0x0 
+   1294 ms: MM2 A= 16, F=0, D= 0, X=13 R      <REP> <REP> <REP>
+   1322 ms: MM2 A= 16, F=0, D= 0, X= 6 F3 aus <REP> <REP> <REP>
+   1391 ms: DCC Pr.15, Daten: c0 1e 40 9e(OK)  L 30 S+D:R 0
+   1403 ms: DCC Pr.51, Daten: c0 1e b0 6e(OK)  L 30 FG2A:0
+   1416 ms: DCC Pr.51, Daten: c0 1e de 00 00(OK)  L 30 FG3:0
+   1426 ms: DCC Pr.15, Daten: ff 00 ff(OK) *IDLE*
+ 
+
+Analyse-Kurzerklärung:
+MM2 A= 16, F=0, D= 0, X=13 R      bedeutet: Adresse 16, Fkt. aus, D=Geschwindigkeit=0, X=MM2extra=13=rückwärts 
+<REP> <REP> <REP>                 bedeutet: wird drei Mal völlig identisch wiederholt
+DCC Pr.15, Daten: c0 1e 40 9e(OK) bedeutet: Präambellänge 15, Daten, (OK)=Checksumme stimmt
+L 30 S+D:R 0                      bedeutet: L=lange Adresse, S+D=speed+direction-Paket, rückwärts+Wert 0
+L 30 FG3:0                        bedeutet: L=lange Adresse 30, FunctionGroup_3=0
+MFX A07:0 Bake von Zentrale 0xF9812, Opt 0x0 bedeutet: MFX mit 7-Bit-Adresse 0, UID der Zentrale, Neuanmeldezähler=0
+
+Die Zeitstempel erleichtern das Auffinden z.B. in der Audacity-Darstellung.
+
+Außerdem werden die Stellbefehle mit Adresse, Port und Status angezeigt:
+   2339 ms: DCC Pr.15, Daten: 82 fd 7f(OK) BASACC  11, P1 = 1
+   2548 ms: MMD A=  2 => ACC  11, P1 = 1  <REP> <REP> <REP>
+   
+BASACC steht für "Basic Accessory", MMD für MM-Code mit Doppelter Frequenz.
+
