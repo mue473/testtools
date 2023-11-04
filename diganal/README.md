@@ -8,3 +8,6 @@
 
 dat2wav and diganal could be used for Windows- (Visual Studio) and Linux- (gcc) PCs and for RaspberryPi.
 
+
+To take the rail signal some HW is required:
+![terminal](https://github.com/mue473/testtools/blob/main/diganal/doc/auffangen.png)
