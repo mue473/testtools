@@ -1,0 +1,30 @@
+
+#define VER_FILEVERSION             5,16,0,0
+#define VER_PRODUCTVERSION_STR      "5.16"
+
+#ifdef RC_INVOKED
+  #include <Winver.h>
+
+  VS_VERSION_INFO VERSIONINFO
+  FILEVERSION     VER_FILEVERSION
+  FILETYPE        VFT_APP
+
+  BEGIN
+    BLOCK "StringFileInfo"
+    BEGIN
+      BLOCK "040704E4"
+      BEGIN
+        VALUE "FileDescription",    "CAN-Monitor für Windows"
+        VALUE "LegalCopyright",     "GPL"
+        VALUE "LegalTrademarks1",   "mue473"
+        VALUE "OriginalFilename",   "can-monitor.exe"
+        VALUE "ProductName",        "CAN-Monitor für Windows"
+        VALUE "ProductVersion",     VER_PRODUCTVERSION_STR
+      END
+    END
+    BLOCK "VarFileInfo"
+    BEGIN
+      VALUE "Translation", 0x407, 1252
+    END
+  END
+#endif

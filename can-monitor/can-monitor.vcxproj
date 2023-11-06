@@ -42,6 +42,9 @@
     <ClCompile Include="lib.c" />
     <ClCompile Include="tools.c" />
   </ItemGroup>
+  <ItemGroup>
+    <ResourceCompile Include="can-monitor.rc" />
+  </ItemGroup>
   <PropertyGroup Label="Globals">
     <VCProjectVersion>15.0</VCProjectVersion>
     <ProjectGuid>{35D7B811-1652-43C3-A57C-15850E215EA0}</ProjectGuid>

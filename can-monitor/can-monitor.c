@@ -50,6 +50,7 @@
 #include "decoder-z21.h"
 #include "tools.h"
 #include "can-monitor.h"
+#include "can-monitor.rc"
 
 #define MAXDG   	4096	/* maximum datagram size */
 #define MAXUDP  	16	/* maximum datagram size */
@@ -83,7 +84,7 @@ void INThandler(int sig) {
 
 void print_usage(char *prg) {
     fprintf(stderr, "\nUsage: %s -i <can|net interface>\n", prg);
-    fprintf(stderr, "   Version 5.16\n\n");
+    fprintf(stderr, "   Version " VER_PRODUCTVERSION_STR "\n\n");
     fprintf(stderr, "         -i <can|net int>  CAN or network interface - default can0\n");
     fprintf(stderr, "         -r <pcap file>    read PCAP file instead from CAN socket\n");
     fprintf(stderr, "         -s                select only network internal frames\n");
