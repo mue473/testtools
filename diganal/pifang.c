@@ -1,5 +1,5 @@
 // pifang.c : Konsolenanwendung zur Digitalsignalaufzeichnung auf einem RasPi.
-// C 2017 - 2021 Rainer Müller
+// C 2017 - 2023 Rainer Müller
 // Das Programm unterliegt den Bedingungen der GNU General Public License 3 (GPL3).
 
 #include <errno.h>
@@ -66,7 +66,7 @@ int main(int argc, char* argv[])
 
     gettimeofday(&tv, NULL);
     t_now = tv.tv_sec * 1000000 + tv.tv_usec - t_now;
-	printf("=>  %i ms\n", t_now/1000);
+	printf("=>  %li ms\n", t_now/1000);
 
 	for (n=0; n<300; n++) {
 		printf("%.2x  ", puffer[n]);

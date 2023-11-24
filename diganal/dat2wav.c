@@ -1,5 +1,5 @@
 // dat2wav.c : Konsolenanwendung zur Umwandlung einer Digitalsignalaufzeichnung.
-// C 2005 Rainer Müller 
+// C 2005 - 2023 Rainer Müller 
 // Das Programm unterliegt den Bedingungen der GNU General Public License 3 (GPL3).
 
 #include <stdio.h>
@@ -37,7 +37,7 @@ void wrkopf(unsigned long datalen)
 	WRDAT(datalen, 4);		/* data size */
 }
 
-int main(int argc, char *argv[], char *envp[])
+int main(int argc, char *argv[])
 {
     int n;
     
