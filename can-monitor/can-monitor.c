@@ -105,8 +105,11 @@ int itfbyindex(char *iname) {
 	if (pcap_findalldevs(&pifptr, errbuf)) return -2;	// error case
 	struct pcap_if *pnxt = pifptr;
 	while (pnxt) {
-		if (index == 0)
-			printf("%d: %s --> %s\n", n, pnxt->description, pnxt->name);
+		if (index == 0) {
+			char * desc = pnxt->description ? pnxt->description : pnxt->name;
+			char f = (pnxt->flags & 0x10) ? 'U' : 'D';	// up or down
+			printf("%d: [%c]  %s --> %s\n", n, f, desc, pnxt->name);
+		}
 		if (index == n++) {
 			strcpy(iname, pnxt->name);
 			pcap_freealldevs(pifptr);
