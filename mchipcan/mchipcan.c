@@ -35,7 +35,7 @@ uint8_t txbuf[16];
 uint8_t rxbuf[16] = {0};
 uint8_t txmsg[16];
 
-short debug = 1;
+short debug = 0;
 short port = 0x378;				// LPT1=0x378, LPT2=0x278
 uint8_t opmode = 0 << 5;		// 0=normal, 3=listen_only
 char *txfifo = "/tmp/cantx";	// default trigger
@@ -220,5 +220,6 @@ int main()
 				}
 			}
 		}
+		if (status & 0x40) usleep(250);			// reduce polling rate when idle
 	}
 }
