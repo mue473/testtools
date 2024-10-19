@@ -2,6 +2,9 @@
 
 Show Live Traffic:
 ```
+Usage: mchipcan [filename]
+If a filename i given, traffic is recorded in candump format in this file.
+
 13:53:17.249  0 0x000B1F18  [5] 00 00 00 4A 01
 13:53:17.250  1 0x00091F18  [6] 00 00 00 4A 00 00
 13:53:17.251  0 0x000D1F18  [6] 00 00 00 4A 00 01

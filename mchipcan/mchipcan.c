@@ -3,6 +3,7 @@
 #include <stdio.h>
 #include <stdint.h>
 #include <stdlib.h>
+#include <signal.h>
 #include <sys/io.h>
 #include <sys/stat.h>
 #include <sys/time.h>
@@ -10,6 +11,7 @@
 #include <fcntl.h>
 #include <time.h>
 #include <unistd.h>
+#include <errno.h>
 
 /* SPI interface instruction set */
 #define INSTRUCTION_WRITE		0x02
@@ -39,6 +41,7 @@ short debug = 0;
 short port = 0x378;				// LPT1=0x378, LPT2=0x278
 uint8_t opmode = 0 << 5;		// 0=normal, 3=listen_only
 char *txfifo = "/tmp/cantx";	// default trigger
+FILE *fdump = NULL;				// candump file
 
 static uint8_t mcp251x_read_reg(uint8_t reg)
 {
@@ -63,6 +66,14 @@ static void mcp251x_write_bits(uint8_t reg, uint8_t mask, uint8_t val)
 	txbuf[2] = mask;
 	txbuf[3] = val;
 	spitransfer(txbuf, NULL, 4);
+}
+
+void sigHandler(int signo)
+{
+	if (signo == SIGINT) {
+		printf(" -> terminating.\n");
+		exit(0);
+	}
 }
 
 static void decodeMsg(uint8_t * msg, char info)
@@ -90,6 +101,28 @@ static void decodeMsg(uint8_t * msg, char info)
 	if (rtr) printf(" <RTR>");
 	else for (int i=5; i<(dlc + 5); i++) printf(" %02X", msg[i]);
 	printf("\n");
+	if (fdump) {
+		fprintf(fdump, "(%ld.%06ld) can%c ", tv.tv_sec, tv.tv_usec, info);
+		if (msg[1] & 8)				// extended ID
+			fprintf(fdump, "%04X%02X%02X#", hid, msg[2], msg[3]);
+		else						// standard ID
+			fprintf(fdump, "%03X#", hid >> 5);
+		if (rtr) fprintf(fdump, "R%d\n", dlc);
+		else {
+			for (int i=5; i<(dlc + 5); i++) fprintf(fdump, "%02X", msg[i]);
+			fprintf(fdump, "\n");
+		}
+	}
+}
+
+static void dumpError(unsigned int id, uint8_t info)
+{
+	struct timeval tv;
+	gettimeofday(&tv, NULL);
+	id |= 0x20000000U;				// error flag
+	info = (info & 0x7E) << 1;
+	if (info & 0x80) info |= 1;		// rx-overflow
+	fprintf(fdump, "(%ld.%06ld) can  %8X#00%2X\n", tv.tv_sec, tv.tv_usec, id, info);
 }
 
 static void handleRX(int chan)
@@ -143,18 +176,24 @@ static int parseTXcmd(char *line)
 	return (dlc + 7);
 }
 
-int main()
+int main(int argc, char* argv[])
 {
 	uint8_t rdval, status;
 	char *line = NULL;
 	size_t llen;
 	ssize_t nread = -1;
 
+	if (argc > 1) {
+		fdump = fopen(argv[1], "w");		// candump file
+		if (!fdump)
+			printf("Can't open file %s for writing - error: %s\n", argv[1], strerror(errno));
+	}
 	umask(0);
 	mkfifo(txfifo, 0666);
 	FILE *infifo = fdopen(open(txfifo, O_RDONLY | O_NONBLOCK), "r");
 	if (infifo == NULL) printf("could not open input fifo, no transmission\n");
 
+	if (signal(SIGINT, sigHandler) == SIG_ERR) printf("Can't catch SIGINT\n");
 	if (ioperm(port, 3L, 1)) {
 		printf("error ioperm failed, permission insufficient\n");
 		return 8;
@@ -201,8 +240,14 @@ int main()
 			rdval = mcp251x_read_reg(CANINTF);
 			if (debug)
 				printf("interrupt status is %02X, error flags %02X\n", rdval, rxbuf[3]);
-			if (rdval & 0x80) printf("**** CAN message error\n");
-			if (rdval & 0x20) printf("**** CAN controller error: %02X\n", rxbuf[3]);
+			if (rdval & 0x80) {
+				printf("**** CAN message error\n");
+				if (fdump) dumpError(8, 0);
+			}
+			if (rdval & 0x20) {
+				printf("**** CAN controller error: %02X\n", rxbuf[3]);
+				if (fdump) dumpError(4, rxbuf[3]);
+			}
 			if (rdval & 0x1C) decodeMsg(&txmsg[2], 'T');
 			mcp251x_write_bits(CANINTF, rdval & 0xFC, 0);	// reset indications
 		}
