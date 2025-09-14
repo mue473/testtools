@@ -1,5 +1,5 @@
 // pifang.c : Konsolenanwendung zur Digitalsignalaufzeichnung auf einem RasPi.
-// C 2017 - 2023 Rainer Müller
+// C 2017 - 2025 Rainer Müller
 // Das Programm unterliegt den Bedingungen der GNU General Public License 3 (GPL3).
 
 #include <errno.h>
@@ -17,7 +17,7 @@ long unsigned int n, anzahl;
 time_t t_now = 0;
 struct timeval tv = { 0, 0 };
 
-int main(int argc, char* argv[])
+int main(int argc, const char* argv[])
 {
 	anzahl = 55125; //60000;
 
@@ -74,8 +74,12 @@ int main(int argc, char* argv[])
 	printf("\n");
 
 	FILE *aus = fopen((argc > 1) ? argv[1] : "default.dat", "wb");
-	fwrite(puffer, 1, anzahl, aus);
-	fclose(aus);
+	if (aus) {
+		fwrite(puffer, 1, anzahl, aus);
+		fclose(aus);
+		return 0;
+	}
 
-	return 0;
+	printf("Writing data file failure: %s.\n", strerror(errno));
+	return 4;
 }

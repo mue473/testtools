@@ -1,5 +1,5 @@
 // dat2wav.c : Konsolenanwendung zur Umwandlung einer Digitalsignalaufzeichnung.
-// C 2005 - 2023 Rainer Müller 
+// C 2005 - 2025 Rainer Müller
 // Das Programm unterliegt den Bedingungen der GNU General Public License 3 (GPL3).
 
 #include <stdio.h>
@@ -12,14 +12,14 @@
 FILE *infile, *outfile;
 unsigned char db;
 
-#define WRTXT(x)	fwrite(x, 1, sizeof(x)-1, outfile)	
+#define WRTXT(x)	fwrite(x, 1, sizeof(x)-1, outfile)
 
-void WRDAT(unsigned long u, int s)
+static void WRDAT(unsigned long u, int s)
 {
 	fwrite(&u, 1, s, outfile);
 }
 
-void wrkopf(unsigned long datalen)
+static void wrkopf(unsigned long datalen)
 {
 	// 52494646 datalen+ 57415645666D7420 10000000 0100 0100 88580100 88580100 0100 0800 64617461 datalen
 
@@ -37,10 +37,10 @@ void wrkopf(unsigned long datalen)
 	WRDAT(datalen, 4);		/* data size */
 }
 
-int main(int argc, char *argv[])
+int main(int argc, const char *argv[])
 {
     int n;
-    
+
 #ifdef WIN32
 	SetConsoleOutputCP(CP_UTF8);
 #endif
@@ -48,7 +48,7 @@ int main(int argc, char *argv[])
 	printf("dat2wav vom %s\n", __DATE__);
 	if (argc < 3) {
 		printf("Aufruf: dat2wav datfilename wavfilename\n");
-		return 8;	
+		return 8;
     }
 	infile = fopen(argv[1], "rb");
 	if (infile == NULL) {
