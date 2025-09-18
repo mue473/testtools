@@ -1,4 +1,4 @@
-// This file is free software; C 2024 Rainer Müller
+// This file is free software; C 2024 - 2025 Rainer Müller
 
 #include <stdio.h>
 #include <stdint.h>
@@ -12,6 +12,8 @@
 #include <time.h>
 #include <unistd.h>
 #include <errno.h>
+
+void statistics(struct timeval tv, int extmsg, int dlen);
 
 /* SPI interface instruction set */
 #define INSTRUCTION_WRITE		0x02
@@ -68,7 +70,7 @@ static void mcp251x_write_bits(uint8_t reg, uint8_t mask, uint8_t val)
 	spitransfer(txbuf, NULL, 4);
 }
 
-void sigHandler(int signo)
+static void sigHandler(int signo)
 {
 	if (signo == SIGINT) {
 		printf(" -> terminating.\n");
@@ -76,11 +78,11 @@ void sigHandler(int signo)
 	}
 }
 
-static void decodeMsg(uint8_t * msg, char info)
+static void decodeMsg(const uint8_t * msg, char info)
 {
 	unsigned int dlc, hid, rtr;
 	struct timeval tv;
-	struct tm *tm;
+	const struct tm *tm;
 
 	gettimeofday(&tv, NULL);
 	tm = localtime(&tv.tv_sec);
@@ -101,13 +103,14 @@ static void decodeMsg(uint8_t * msg, char info)
 	if (rtr) printf(" <RTR>");
 	else for (int i=5; i<(dlc + 5); i++) printf(" %02X", msg[i]);
 	printf("\n");
+	statistics(tv, (msg[1] & 8), (rtr ? 0 : dlc));
 	if (fdump) {
 		fprintf(fdump, "(%ld.%06ld) can%c ", tv.tv_sec, tv.tv_usec, info);
 		if (msg[1] & 8)				// extended ID
 			fprintf(fdump, "%04X%02X%02X#", hid, msg[2], msg[3]);
 		else						// standard ID
 			fprintf(fdump, "%03X#", hid >> 5);
-		if (rtr) fprintf(fdump, "R%d\n", dlc);
+		if (rtr) fprintf(fdump, "R%u\n", dlc);
 		else {
 			for (int i=5; i<(dlc + 5); i++) fprintf(fdump, "%02X", msg[i]);
 			fprintf(fdump, "\n");
@@ -134,7 +137,7 @@ static void handleRX(int chan)
 	mcp251x_write_bits(CANINTF, 1 << chan, 0);
 }
 
-static int parseTXcmd(char *line)
+static int parseTXcmd(const char *line)
 {
 	int dlc = 0;
 	char dby[4];
@@ -176,12 +179,11 @@ static int parseTXcmd(char *line)
 	return (dlc + 7);
 }
 
-int main(int argc, char* argv[])
+int main(int argc, const char* argv[])
 {
 	uint8_t rdval, status;
 	char *line = NULL;
 	size_t llen;
-	ssize_t nread = -1;
 
 	if (argc > 1) {
 		fdump = fopen(argv[1], "w");		// candump file
@@ -253,7 +255,7 @@ int main(int argc, char* argv[])
 		}
 		else if (infifo) {
 			clearerr(infifo);
-			nread = getline(&line, &llen, infifo);	// check if tx requested
+			ssize_t nread = getline(&line, &llen, infifo);	// check if tx requested
 			if (nread > 0) {
 				int tlen = parseTXcmd(line);
 				if (tlen) {
