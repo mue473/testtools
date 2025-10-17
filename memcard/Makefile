@@ -1,16 +1,28 @@
-BINS := wrmemcard
+# This file is free software; C 2025 Rainer Müller
 
-# BIN = $@
+BINS := rdmemcard wrmemcard
+CFLAGS+=-Wall -pedantic -std=gnu99 -g -I/usr/include/PCSC
 
-LCRD_OBJS = wrmemcard.o
+DESTDIR=/usr/local/bin
+
+CC = gcc
+
+
+.PHONY:	all check install clean
 
 all: $(BINS)
 
-CFLAGS+=-Wall -pedantic -std=gnu99 -g -I/usr/include/PCSC
-LFLAGS+=$(shell pkg-config --cflags libpcsclite)
+rdmemcard: rdmemcard.o
+	$(CC) $(CFLAGS) -o rdmemcard rdmemcard.o -lpcsclite
 
-wrmemcard: ${LCRD_OBJS}
-	$(CC) $(CFLAGS) -o wrmemcard ${LCRD_OBJS} -lpcsclite
+wrmemcard: wrmemcard.o
+	$(CC) $(CFLAGS) -o wrmemcard wrmemcard.o -lpcsclite
 
 clean:
 	$(RM) *.o $(BINS)
+
+check:
+	cppcheck --enable=all --suppress=missingIncludeSystem .
+
+install: all
+	cp -p $(BINS) $(DESTDIR)
